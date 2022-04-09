@@ -1,0 +1,15 @@
+GET http://localhost:3000/v1/artworks/ HTTP/1.1
+
+###
+
+
+POST http://localhost:3000/v1/artworks/ HTTP/1.1
+content-type: application/json
+
+{
+    "_id": 2,
+    "title": "Interested Penguin",
+    "author": "David",
+    "description": "An intrigued little penguin",
+    "imageUrl": "http://abc"
+}
