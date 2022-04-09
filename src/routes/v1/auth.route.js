@@ -6,6 +6,29 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
+router.get('/nonce', function (req, res) {
+    // TODO: validate addr present in params
+    res.send({
+        addr: req.query.addr,
+        nonce: Math.floor(Math.random() * 1e20)
+    })
+})
+
+router.post('/nonce', function (req, res) {
+    const addr = req.query.addr
+    const signature = req.query.signature
+    req.login({
+        addr: addr,
+        signature: signature
+    }, function(err) {
+        if (err) {
+            console.log("Login error")
+        }
+
+        res.send("Logged in")
+    })
+})
+
 router.post('/register', validate(authValidation.register), authController.register);
 router.post('/login', validate(authValidation.login), authController.login);
 router.post('/logout', validate(authValidation.logout), authController.logout);
@@ -22,6 +45,60 @@ module.exports = router;
  * tags:
  *   name: Auth
  *   description: Authentication
+ */
+
+/**
+ * @swagger
+ * /auth/nonce:
+ *   get:
+ *     summary: Get a nonce for authentication
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: addr
+ *         schema:
+ *           type: string
+ *         description: address of the user to be authenticated
+  *       - in: query
+ *         name: signature
+ *         schema:
+ *           type: string
+ *         description: signature
+ *     responses:
+ *       "200":
+ *         description: Nonce
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 addr:
+ *                   type: string
+ *                 nonce:
+ *                   type: integer
+ *                   format: int64
+ *   post:
+ *     summary: Login with signature
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: addr
+ *         schema:
+ *           type: string
+ *         description: address of the user to be authenticated
+ *     responses:
+ *       "200":
+ *         description: Nonce
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 addr:
+ *                   type: string
+ *                 nonce:
+ *                   type: integer
+ *                   format: int64
  */
 
 /**

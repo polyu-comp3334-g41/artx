@@ -1,9 +1,11 @@
 const express = require('express');
+const passport = require('passport')
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const userValidation = require('../../validations/user.validation');
 const userController = require('../../controllers/user.controller');
 const artworkController = require('../../controllers/artwork.controller')
+const artworkValidation = require('../../validations/artwork.validation')
 
 const router = express.Router();
 
@@ -117,7 +119,7 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/Artwork'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *

@@ -22,7 +22,32 @@ components:
         author: 0x97b2Bb9653Fd193FD65Da59e57CA69237bBee1B5
         description: A penguin reading Linux manual
         imageUrl: https://image.host/sdfcxv
-
+    SwapOrder:
+      type: object  
+      required:
+        - _id
+        - makerTokenId
+        - takerTokenId
+        - status
+      properties:
+        _id:
+          type: integer
+          format: int64
+        makerTokenId:
+          type: integer
+          format: int64
+        takerTokenId:
+          type: integer
+          format: int64
+        status:
+          type: integer
+          enum: [1, 2, 3]
+          description: 1 -> "PROPOSED", 2 -> "CLOSED", 3 -> "CANCELLED"
+      example:
+        _id: 456
+        makerTokenId: 52
+        takerTokenId: 46
+        status: "CLOSED"
     User:
       type: object
       properties:

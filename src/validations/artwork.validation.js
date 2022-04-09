@@ -3,7 +3,7 @@ const { objectId } = require('./custom.validation');
 
 const createArtwork = {
   body: Joi.object().keys({
-    id: Joi.number().required(),
+    _id: Joi.number().required(),
     title: Joi.string().required(),
     description: Joi.string().required(),
     author: Joi.string().required(),

@@ -11,11 +11,11 @@ const OrderStatus = {
 
 const swapOrderSchema = new Schema({
   makerToken: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.Number,
     ref: 'Artwork',
   },
   takerToken: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.Number,
     ref: 'Artwork',
   },
   status: Number  // Order status
@@ -23,10 +23,14 @@ const swapOrderSchema = new Schema({
 
 // add plugin that converts mongoose to json
 swapOrderSchema.plugin(toJSON);
+swapOrderSchema.plugin(paginate);
 
 /**
  * @typedef SwapOrder
  */
 const SwapOrder = mongoose.model('SwapOrder', swapOrderSchema);
 
-module.exports = SwapOrder;
+module.exports = {
+  SwapOrder,
+  OrderStatus
+}
