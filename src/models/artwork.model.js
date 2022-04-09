@@ -12,6 +12,7 @@ const artworkSchema = new Schema({
 
 // add plugin that converts mongoose to json
 artworkSchema.plugin(toJSON);
+artworkSchema.plugin(paginate);
 
 /**
  * @typedef Artwork

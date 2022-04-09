@@ -6,15 +6,15 @@ const { userService } = require('../services');
 const Artwork = require('../models/artwork.model');
 
 const createArtwork = catchAsync(async (req, res) => {
-  Object.defineProperty(req.body, "_id", Object.getOwnPropertyDescriptor(req.body, "id"));
-  delete req.body['id'];
   const artwork = await Artwork.create(req.body);
   res.status(httpStatus.CREATED).send(artwork);
 });
 
 const getArtworks = catchAsync(async (req, res) => {
-  // TODO: apply filters
-  const artworks = await Artwork.find({});
+  const filter = {}; // no filters
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  console.log(options)
+  const artworks = await Artwork.paginate(filter, options);
   res.send(artworks);
 });
 

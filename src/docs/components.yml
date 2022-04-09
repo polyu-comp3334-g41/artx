@@ -3,12 +3,12 @@ components:
     Artwork:
       type: object  
       required:
-        - id
+        - _id
         - title
         - author
         - imageUrl
       properties:
-        id:
+        _id:
           type: integer
           format: int64
         title:
@@ -16,12 +16,13 @@ components:
         author:
           type: string
           description: Ethereum address
-        example:
-          id: 10
-          title: Nerd Penguin
-          author: 0x97b2Bb9653Fd193FD65Da59e57CA69237bBee1B5
-          description: A penguin reading Linux manual
-          imageUrl: https://image.host/sdfcxv
+      example:
+        _id: 10
+        title: Nerd Penguin
+        author: 0x97b2Bb9653Fd193FD65Da59e57CA69237bBee1B5
+        description: A penguin reading Linux manual
+        imageUrl: https://image.host/sdfcxv
+
     User:
       type: object
       properties:
