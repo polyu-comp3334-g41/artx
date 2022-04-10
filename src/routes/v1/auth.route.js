@@ -42,8 +42,8 @@ router.get('/failure', function (req, res) {
   res.status(httpStatus.OK).end();
 });
 
-// Testing endpoint
-router.get('/secret', ensureAuthenticated, function (req, res) {
+// Current user
+router.get('/user', ensureAuthenticated, function (req, res) {
   res.send({ user: req.user });
 });
 
@@ -58,13 +58,13 @@ module.exports = router;
 
 /**
  * @swagger
- * /auth/secret:
+ * /auth/user:
  *   get:
- *     summary: Get a secret
+ *     summary: Get current user
  *     tags: [Auth]
  *     responses:
  *       "200":
- *         description: user
+ *         description: Current user
  *         content:
  *           application/json:
  *             schema:

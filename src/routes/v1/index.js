@@ -1,6 +1,5 @@
 const express = require('express');
 const authRoute = require('./auth.route');
-const userRoute = require('./user.route');
 const artworkRoute = require('./artwork.route');
 const swapOrderRoute = require('./swapOrder.route');
 const docsRoute = require('./docs.route');
@@ -12,10 +11,6 @@ const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
-  },
-  {
-    path: '/users',
-    route: userRoute,
   },
   {
     path: '/artworks',
