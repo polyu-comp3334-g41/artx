@@ -1,17 +1,20 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
+const { Schema } = mongoose;
 const { ethers } = require('ethers');
 const { toJSON, paginate } = require('./plugins');
-const { roles } = require('../config/roles');
 
-const userSessionSchema = mongoose.Schema({
+const userSessionSchema = new Schema({
   addr: String,
-  nonce: Number,
+  nonce: String,
 });
+
+userSessionSchema.plugin(toJSON);
+userSessionSchema.plugin(paginate);
 
 userSessionSchema.methods.verifySignature = async function (signature) {
   const signerAddr = await ethers.utils.verifyMessage(this.nonce, signature);
+  console.log("Signer: " + signerAddr)
+  console.log("Address: " + this.addr)
   if (signerAddr !== this.addr) {
     return false;
   }

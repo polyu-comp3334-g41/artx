@@ -5,6 +5,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const cors = require('cors');
 const passport = require('passport');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const httpStatus = require('http-status');
 const config = require('./config/config');
 const morgan = require('./config/morgan');
@@ -41,9 +43,23 @@ app.use(compression());
 app.use(cors());
 app.options('*', cors());
 
+
 // jwt authentication
+// passport.use('jwt', jwtStrategy);
+
+// express session
+app.use(
+  session({
+    secret: 'foo',
+    store: MongoStore.create({
+      mongoUrl: config.mongoose.url,
+      resave: true,
+      saveUninitialized: true
+    }),
+  })
+);
 app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
+app.use(passport.session());
 passport.use('local', localStrategy);
 
 // limit repeated failed requests to auth endpoints

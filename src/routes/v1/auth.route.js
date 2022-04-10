@@ -2,34 +2,50 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const authValidation = require('../../validations/auth.validation');
 const authController = require('../../controllers/auth.controller');
+const passport = require('passport');
 const auth = require('../../middlewares/auth');
+const UserSession = require('../../models/userSession.model');
+const httpStatus = require('http-status');
+const ApiError = require('../../utils/ApiError');
 
 const router = express.Router();
 
-router.get('/nonce', function (req, res) {
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.redirect('/auth/nonce');
+  }
+}
+
+router.get('/nonce', async function (req, res) {
   // TODO: validate addr present in params
+  const nonce = 'nonce';
+  await UserSession.create({ addr: req.query.addr, nonce: nonce });
+
   res.send({
     addr: req.query.addr,
-    nonce: Math.floor(Math.random() * 1e20),
+    nonce: nonce,
   });
 });
 
-router.post('/nonce', function (req, res) {
-  const { addr } = req.query;
-  const { signature } = req.query;
-  req.login(
-    {
-      addr,
-      signature,
-    },
-    function (err) {
-      if (err) {
-        console.log('Login error');
-      }
+router.post('/nonce',
+  passport.authenticate('local', {
+    successRedirect: 'v1/auth/success',
+    failureRedirect: 'v1/auth/failure',
+  })
+);
 
-      res.send('Logged in');
-    }
-  );
+router.get('/secret', ensureAuthenticated, function (req, res) {
+  res.send({ user: req.user });
+});
+
+router.get('/success', function (req, res) {
+  res.send({ user: req.user });
+});
+
+router.get('/failure', function (req, res) {
+  res.send('Login failed');
 });
 
 router.post('/register', validate(authValidation.register), authController.register);
@@ -52,6 +68,27 @@ module.exports = router;
 
 /**
  * @swagger
+ * /auth/secret:
+ *   get:
+ *     summary: Get a secret
+ *     tags: [Auth]
+ *     responses:
+ *       "200":
+ *         description: user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 addr:
+ *                   type: string
+ *                 nonce:
+ *                   type: integer
+ *                   format: int64
+ */
+
+/**
+ * @swagger
  * /auth/nonce:
  *   get:
  *     summary: Get a nonce for authentication
@@ -62,11 +99,6 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: address of the user to be authenticated
- *       - in: query
- *         name: signature
- *         schema:
- *           type: string
- *         description: signature
  *     responses:
  *       "200":
  *         description: Nonce
@@ -83,12 +115,22 @@ module.exports = router;
  *   post:
  *     summary: Login with signature
  *     tags: [Auth]
- *     parameters:
- *       - in: query
- *         name: addr
- *         schema:
- *           type: string
- *         description: address of the user to be authenticated
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - addr
+ *               - signature
+ *             properties:
+ *               addr:
+ *                 type: string
+ *                 format: addr
+ *               signature:
+ *                 type: string
+ *                 format: signature
  *     responses:
  *       "200":
  *         description: Nonce

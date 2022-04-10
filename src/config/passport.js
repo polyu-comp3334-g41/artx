@@ -1,5 +1,6 @@
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const { Strategy: LocalStrategy } = require('passport-local');
+const passport = require('passport');
 const config = require('./config');
 const { tokenTypes } = require('./tokens');
 const { User } = require('../models');
@@ -27,22 +28,37 @@ const jwtVerify = async (payload, done) => {
 
 const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
 
-const localStrategy = new LocalStrategy({ usernameField: 'addr', passwordField: 'signature' }, function (
+const localStrategy = new LocalStrategy({ usernameField: 'addr', passwordField: 'signature' }, async function verify(
   addr,
   signature,
   done
 ) {
-  UserSession.findOne({ addr }, function (err, user) {
-    if (err) {
-      return done(err);
-    }
-    if (!user) {
-      return done(null, false);
-    }
-    if (!user.verifySignature(signature)) {
-      return done(null, false);
-    }
-    return done(null, user);
+  console.log('Authenticating user with local');
+  let user = await UserSession.findOne({ addr: addr }).exec();
+
+  if (!user) {
+    return done(null, false);
+  }
+
+  if (!(await user.verifySignature(signature))) {
+    return done(null, false);
+  }
+
+  console.log('Authenticated: ' + user);
+  return done(null, user);
+});
+
+// used to serialize the user for the session
+passport.serializeUser(function (user, done) {
+  console.log('Serializing user: ' + user);
+  done(null, user._id);
+});
+
+// used to deserialize the user
+passport.deserializeUser(function (id, done) {
+  console.log('Deserializing user: ' + id);
+  UserSession.findById(id, function (err, user) {
+    done(err, user);
   });
 });
 

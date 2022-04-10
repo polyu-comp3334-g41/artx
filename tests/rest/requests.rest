@@ -13,3 +13,12 @@ content-type: application/json
     "description": "An intrigued little penguin",
     "imageUrl": "http://abc"
 }
+
+###
+POST http://localhost:3000/v1/auth/nonce/ HTTP/1.1
+content-type: application/json
+
+{
+  "addr": "0x3070BdB50B02D80C3B76819034335D46EbF558Ad",
+  "signature": "0xddd0a7290af9526056b4e35a077b9a11b513aa0028ec6c9880948544508f3c63265e99e47ad31bb2cab9646c504576b3abc6939a1710afc08cbf3034d73214b81c"
+}
