@@ -1,22 +1,17 @@
 const express = require('express');
-const passport = require('passport')
+const passport = require('passport');
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const userValidation = require('../../validations/user.validation');
 const userController = require('../../controllers/user.controller');
-const artworkController = require('../../controllers/artwork.controller')
-const artworkValidation = require('../../validations/artwork.validation')
+const artworkController = require('../../controllers/artwork.controller');
+const artworkValidation = require('../../validations/artwork.validation');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .post(artworkController.createArtwork)
-  .get(artworkController.getArtworks);
+router.route('/').post(artworkController.createArtwork).get(artworkController.getArtworks);
 
-router
-  .route('/:id')
-  .get(artworkController.getArtwork)
+router.route('/:id').get(artworkController.getArtwork);
 
 module.exports = router;
 
@@ -53,6 +48,11 @@ module.exports = router;
  *     description: based on the query string
  *     tags: [Artwork]
  *     parameters:
+ *       - in: query
+ *         name: author
+ *         schema:
+ *           type: string
+ *         description: filter by artwork's owner
  *       - in: query
  *         name: sortBy
  *         schema:

@@ -1,9 +1,9 @@
 const passport = require('passport');
-const UserSession = require('../models/userSession.model')
+const UserSession = require('../models/userSession.model');
 
 passport.use(
   new LocalStrategy(function (addr, signature, done) {
-    UserSession.findOne({ addr: addr }, function (err, user) {
+    UserSession.findOne({ addr }, function (err, user) {
       if (err) {
         return done(err);
       }

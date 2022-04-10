@@ -6,19 +6,13 @@ const userValidation = require('../../validations/user.validation');
 const userController = require('../../controllers/user.controller');
 const artworkController = require('../../controllers/artwork.controller');
 const artworkValidation = require('../../validations/artwork.validation');
-const swapOrderController = require('../../controllers/swapOrder.controller')
+const swapOrderController = require('../../controllers/swapOrder.controller');
 
 const router = express.Router();
 
-router
-    .route('/')
-    .post(swapOrderController.proposeSwapOrder)
-    .get(swapOrderController.getSwapOrders)
+router.route('/').post(swapOrderController.proposeSwapOrder).get(swapOrderController.getSwapOrders);
 
-router.route('/:id')
-    .get(swapOrderController.getSwapOrder)
-    .delete(swapOrderController.deleteSwapOrder)
-
+router.route('/:id').get(swapOrderController.getSwapOrder).delete(swapOrderController.deleteSwapOrder);
 
 module.exports = router;
 
@@ -54,7 +48,7 @@ module.exports = router;
  *                 format: int64
  *               takerTokenId:
  *                 type: integer
- *                 format: int64   
+ *                 format: int64
  *     responses:
  *       "201":
  *         description: Created
@@ -153,7 +147,7 @@ module.exports = router;
  *                $ref: '#/components/schemas/SwapOrder'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- * 
+ *
  *   delete:
  *     summary: Delete order
  *     description: Remove or cancel an order

@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
+
 const { Schema } = mongoose;
 const { toJSON, paginate } = require('./plugins');
 
-
 const OrderStatus = {
-    PROPOSED: 1,
-    CLOSED: 2,
-    CANCELLED: 3,
-}
+  PROPOSED: 1,
+  CLOSED: 2,
+  CANCELLED: 3,
+};
 
 const swapOrderSchema = new Schema({
   makerToken: {
@@ -18,7 +18,7 @@ const swapOrderSchema = new Schema({
     type: Schema.Types.Number,
     ref: 'Artwork',
   },
-  status: Number  // Order status
+  status: Number, // Order status
 });
 
 // add plugin that converts mongoose to json
@@ -32,5 +32,5 @@ const SwapOrder = mongoose.model('SwapOrder', swapOrderSchema);
 
 module.exports = {
   SwapOrder,
-  OrderStatus
-}
+  OrderStatus,
+};

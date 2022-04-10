@@ -32,7 +32,7 @@ const localStrategy = new LocalStrategy({ usernameField: 'addr', passwordField: 
   signature,
   done
 ) {
-  UserSession.findOne({ addr: addr }, function (err, user) {
+  UserSession.findOne({ addr }, function (err, user) {
     if (err) {
       return done(err);
     }

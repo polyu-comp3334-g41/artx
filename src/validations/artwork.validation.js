@@ -7,7 +7,7 @@ const createArtwork = {
     title: Joi.string().required(),
     description: Joi.string().required(),
     author: Joi.string().required(),
-    imageUrl: Joi.string().uri().required()
+    imageUrl: Joi.string().uri().required(),
   }),
 };
 
@@ -26,7 +26,7 @@ const getArtwork = {
 };
 
 module.exports = {
-    createArtwork,
-    getArtworks,
-    getArtwork
+  createArtwork,
+  getArtworks,
+  getArtwork,
 };

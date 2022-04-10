@@ -7,27 +7,30 @@ const auth = require('../../middlewares/auth');
 const router = express.Router();
 
 router.get('/nonce', function (req, res) {
-    // TODO: validate addr present in params
-    res.send({
-        addr: req.query.addr,
-        nonce: Math.floor(Math.random() * 1e20)
-    })
-})
+  // TODO: validate addr present in params
+  res.send({
+    addr: req.query.addr,
+    nonce: Math.floor(Math.random() * 1e20),
+  });
+});
 
 router.post('/nonce', function (req, res) {
-    const addr = req.query.addr
-    const signature = req.query.signature
-    req.login({
-        addr: addr,
-        signature: signature
-    }, function(err) {
-        if (err) {
-            console.log("Login error")
-        }
+  const { addr } = req.query;
+  const { signature } = req.query;
+  req.login(
+    {
+      addr,
+      signature,
+    },
+    function (err) {
+      if (err) {
+        console.log('Login error');
+      }
 
-        res.send("Logged in")
-    })
-})
+      res.send('Logged in');
+    }
+  );
+});
 
 router.post('/register', validate(authValidation.register), authController.register);
 router.post('/login', validate(authValidation.login), authController.login);
@@ -59,7 +62,7 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: address of the user to be authenticated
-  *       - in: query
+ *       - in: query
  *         name: signature
  *         schema:
  *           type: string

@@ -44,7 +44,7 @@ app.options('*', cors());
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
-passport.use('local', localStrategy)
+passport.use('local', localStrategy);
 
 // limit repeated failed requests to auth endpoints
 if (config.env === 'production') {
