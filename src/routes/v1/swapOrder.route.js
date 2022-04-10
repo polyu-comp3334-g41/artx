@@ -1,18 +1,16 @@
 const express = require('express');
-const passport = require('passport');
-const auth = require('../../middlewares/auth');
-const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-const userController = require('../../controllers/user.controller');
-const artworkController = require('../../controllers/artwork.controller');
-const artworkValidation = require('../../validations/artwork.validation');
 const swapOrderController = require('../../controllers/swapOrder.controller');
+const { ensureAuthenticated } = require('../../controllers/auth.controller');
 
 const router = express.Router();
 
-router.route('/').post(swapOrderController.proposeSwapOrder).get(swapOrderController.getSwapOrders);
+router.route('/').post(ensureAuthenticated, swapOrderController.proposeSwapOrder);
 
-router.route('/:id').get(swapOrderController.getSwapOrder).delete(swapOrderController.deleteSwapOrder);
+router.route('/').get(swapOrderController.getSwapOrders);
+
+router.route('/:id').get(swapOrderController.getSwapOrder);
+
+router.route('/:id').delete(ensureAuthenticated, swapOrderController.deleteSwapOrder);
 
 module.exports = router;
 

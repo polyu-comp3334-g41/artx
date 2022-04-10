@@ -6,9 +6,11 @@ const Artwork = require('../models/artwork.model');
 
 const createArtwork = catchAsync(async (req, res) => {
   // TODO: authentication
-  let artwork = req.body;
+  const artwork = req.body;
+  if (req.user.addr !== artwork.author) throw new ApiError(httpStatus.UNAUTHORIZED, `Unauthorized create`);
 
-  if ((await Artwork.findById(artwork._id).exec()) != null) throw new ApiError(httpStatus.CONFLICT, `Artwork with id ${artwork._id} already exists`);
+  if ((await Artwork.findById(artwork._id).exec()) != null)
+    throw new ApiError(httpStatus.CONFLICT, `Artwork with id ${artwork._id} already exists`);
 
   await Artwork.create(artwork);
   res.status(httpStatus.CREATED).send(artwork);

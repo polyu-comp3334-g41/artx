@@ -6,22 +6,21 @@ const { SwapOrder, OrderStatus } = require('../models/swapOrder.model');
 const Artwork = require('../models/artwork.model');
 
 const proposeSwapOrder = catchAsync(async (req, res) => {
-  // TODO: auth
-  
   const makerAddr = req.query.maker;
-  const { makerTokenId } = req.body;
-  const { takerTokenId } = req.body;
+  if (makerAddr !== req.user.addr) throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized proposal');
+  const { makerTokenId, takerTokenId } = req.body;
 
   // exists
-  for (const id of [makerTokenId, takerTokenId]) {
-    if ((await Artwork.findById(id).exec()) == null) throw new ApiError(httpStatus.NOT_FOUND, `Token not found: ${id}`);
-  }
+  if ((await Artwork.findById(makerTokenId).exec()) == null)
+    throw new ApiError(httpStatus.NOT_FOUND, 'Maker token not found');
+  if ((await Artwork.findById(takerTokenId).exec()) == null)
+    throw new ApiError(httpStatus.NOT_FOUND, 'Taker token not found');
 
   // make sure the maker owns the token
-  if ((await Artwork.findById(makerTokenId).exec()).author != makerAddr)
+  if ((await Artwork.findById(makerTokenId).exec()).author !== makerAddr)
     throw new ApiError(httpStatus.FORBIDDEN, `${makerAddr} does not own token ${makerTokenId}`);
 
-  order = await SwapOrder.create({
+  const order = await SwapOrder.create({
     makerToken: makerTokenId,
     takerToken: takerTokenId,
     status: OrderStatus.PROPOSED,
@@ -45,24 +44,24 @@ const getSwapOrder = catchAsync(async (req, res) => {
 });
 
 const deleteSwapOrder = catchAsync(async (req, res) => {
-  const { user } = req.query;
-  const { action } = req.query;
+  const { user, action } = req.query;
+  if (user !== req.user.addr) throw new ApiError(httpStatus.UNAUTHORIZED);
 
-  swapOrder = await SwapOrder.findById(req.params.id);
+  let swapOrder = await SwapOrder.findById(req.params.id);
   if (swapOrder == null) throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
-  if (swapOrder.status != OrderStatus.PROPOSED) throw new ApiError(httpStatus.CONFLICT, 'Order already closed or cancelled');
+  if (swapOrder.status !== OrderStatus.PROPOSED)
+    throw new ApiError(httpStatus.CONFLICT, 'Order already closed or cancelled');
 
+  // populate tokens
   swapOrder = await SwapOrder.findById(req.params.id).populate('makerToken').populate('takerToken').exec();
+  const { makerToken, takerToken } = swapOrder;
 
-  if (action == 'close') {
+  if (action === 'close') {
     // can only be closed by taker
-    if (swapOrder.takerToken.author != user) throw new ApiError(httpStatus.FORBIDDEN, 'Order can only be closed by taker');
+    if (swapOrder.takerToken.author !== user) throw new ApiError(httpStatus.FORBIDDEN, 'Order can only be closed by taker');
 
     // exchange ownership
-    makerToken = swapOrder.makerToken;
-    takerToken = swapOrder.takerToken;
-
-    tmp = makerToken.author;
+    const tmp = makerToken.author;
     makerToken.author = takerToken.author;
     takerToken.author = tmp;
 
@@ -70,23 +69,20 @@ const deleteSwapOrder = catchAsync(async (req, res) => {
     swapOrder.status = OrderStatus.CLOSED;
 
     // save
-    swapOrder.save(function (err) {
-      makerToken.save((err) => {});
-      takerToken.save((err) => {});
-    });
+    await makerToken.save();
+    await takerToken.save();
+    await swapOrder.save();
   } else {
     // action == "cancel"
     // can be both parties
-    if (!(user == swapOrder.takerToken.author || user == swapOrder.makerToken.author))
+    if (!(user === swapOrder.takerToken.author || user === swapOrder.makerToken.author))
       throw new ApiError(httpStatus.FORBIDDEN, 'Order can only by cancelled by maker or taker');
 
     // change status
     swapOrder.status = OrderStatus.CANCELLED;
 
     // save
-    swapOrder.save(function (err) {
-      console.log(err);
-    });
+    await swapOrder.save();
   }
 
   res.send(swapOrder);

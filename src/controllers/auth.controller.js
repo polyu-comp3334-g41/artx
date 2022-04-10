@@ -2,6 +2,14 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
 
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.redirect('/auth/nonce');
+  }
+};
+
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
@@ -48,6 +56,7 @@ const verifyEmail = catchAsync(async (req, res) => {
 });
 
 module.exports = {
+  ensureAuthenticated,
   register,
   login,
   logout,

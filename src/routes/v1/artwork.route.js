@@ -1,15 +1,12 @@
 const express = require('express');
-const passport = require('passport');
-const auth = require('../../middlewares/auth');
-const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-const userController = require('../../controllers/user.controller');
 const artworkController = require('../../controllers/artwork.controller');
-const artworkValidation = require('../../validations/artwork.validation');
+const { ensureAuthenticated } = require('../../controllers/auth.controller');
 
 const router = express.Router();
 
-router.route('/').post(artworkController.createArtwork).get(artworkController.getArtworks);
+router.route('/').post(ensureAuthenticated, artworkController.createArtwork);
+
+router.route('/').get(artworkController.getArtworks);
 
 router.route('/:id').get(artworkController.getArtwork);
 

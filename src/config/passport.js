@@ -33,8 +33,7 @@ const localStrategy = new LocalStrategy({ usernameField: 'addr', passwordField: 
   signature,
   done
 ) {
-  console.log('Authenticating user with local');
-  let user = await UserSession.findOne({ addr: addr }).exec();
+  const user = await UserSession.findOne({ addr }).exec();
 
   if (!user) {
     return done(null, false);
@@ -44,20 +43,20 @@ const localStrategy = new LocalStrategy({ usernameField: 'addr', passwordField: 
     return done(null, false);
   }
 
-  console.log('Authenticated: ' + user);
+  console.log('Logged in: ' + user);
   return done(null, user);
 });
 
 // used to serialize the user for the session
 passport.serializeUser(function (user, done) {
   console.log('Serializing user: ' + user);
-  done(null, user._id);
+  done(null, user.addr);
 });
 
 // used to deserialize the user
 passport.deserializeUser(function (id, done) {
   console.log('Deserializing user: ' + id);
-  UserSession.findById(id, function (err, user) {
+  UserSession.findOne({ addr: id }, function (err, user) {
     done(err, user);
   });
 });
