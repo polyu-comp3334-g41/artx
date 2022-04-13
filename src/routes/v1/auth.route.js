@@ -29,17 +29,21 @@ router.get('/nonce', async function (req, res) {
 router.post(
   '/nonce',
   passport.authenticate('local', {
-    successRedirect: 'v1/auth/success',
-    failureRedirect: 'v1/auth/failure',
+    successRedirect: 'success',
+    failureRedirect: 'failure',
   })
 );
 
 router.get('/success', ensureAuthenticated, function (req, res) {
-  res.status(httpStatus.OK).end();
+  res.status(httpStatus.OK).send({
+    success: true,
+  });
 });
 
 router.get('/failure', function (req, res) {
-  res.status(httpStatus.OK).end();
+  res.status(httpStatus.UNAUTHORIZED).send({
+    success: false,
+  });
 });
 
 // Current user

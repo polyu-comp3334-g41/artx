@@ -3,7 +3,6 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const Artwork = require('../models/artwork.model');
-const { LENGTH_REQUIRED } = require('http-status');
 
 const createArtwork = catchAsync(async (req, res) => {
   // TODO: authentication
@@ -13,7 +12,7 @@ const createArtwork = catchAsync(async (req, res) => {
   if ((await Artwork.findById(artwork._id).exec()) != null)
     throw new ApiError(httpStatus.CONFLICT, `Artwork with id ${artwork._id} already exists`);
 
-  artwork =await Artwork.create(artwork);
+  artwork = await Artwork.create(artwork);
   res.status(httpStatus.CREATED).send(artwork);
 });
 
