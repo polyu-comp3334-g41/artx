@@ -35,18 +35,25 @@ const getSwapOrders = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const swapOrders = await SwapOrder.paginate(filter, options);
 
-  swapOrders.results.forEach(async (order) => {
-    try {
-      const populated = await SwapOrder.findById(order._id).populate('makerToken').populate('takerToken').exec();
-      order.makerToken = populated.makerToken;
-      order.takerToken = populated.takerToken;
-    } catch (error) {
-      // pass
-    }
-  });
+  const populatedResults = [];
 
-  if (req.query.maker) swapOrders.results.filter((order) => order.makerToken.author === req.query.maker);
-  if (req.query.taker) swapOrders.results.filter((order) => order.takerToken.author === req.query.taker);
+  for (const order of swapOrders.results) {
+      const populated = await SwapOrder.findById(order._id).populate('makerToken').populate('takerToken').exec();
+
+      populatedResults.push(populated);
+  }
+
+
+  let results;
+  if (req.query.maker) results = populatedResults.filter((order) => order.makerToken.author === req.query.maker);
+  if (req.query.taker) results = populatedResults.filter((order) => order.takerToken.author === req.query.taker);
+  if (req.query.maker || req.query.taker) swapOrders.results = results;
+
+  // cast down
+  for (const order of swapOrders.results) {
+    order.takerToken = order.takerToken._id;
+    order.makerToken = order.makerToken._id;
+  }
 
   res.send(swapOrders);
 });
