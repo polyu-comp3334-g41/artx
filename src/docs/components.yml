@@ -22,7 +22,8 @@ components:
         imageUrl:
           type: string
       example:
-        _id: 10
+        _id: b2Bb9653Fd193FD65
+        tokenId: 98
         title: Nerd Penguin
         author: "0x97b2Bb9653Fd193FD65Da59e57CA69237bBee1B5"
         description: A penguin reading Linux manual

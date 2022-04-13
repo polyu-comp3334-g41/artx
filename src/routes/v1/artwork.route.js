@@ -35,10 +35,9 @@ module.exports = router;
  *           schema:
  *             type: object
  *             properties:
- *               tokenId:
- *                 type: integer
- *                 format: int64
  *               title:
+ *                 type: string
+ *               description:
  *                 type: string
  *               author:
  *                 type: string

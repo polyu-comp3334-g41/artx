@@ -53,7 +53,7 @@ app.use(
     store: MongoStore.create({
       mongoUrl: config.mongoose.url,
       resave: true,
-      saveUninitialized: true
+      saveUninitialized: true,
     }),
   })
 );

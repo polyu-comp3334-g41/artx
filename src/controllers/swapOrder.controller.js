@@ -33,6 +33,7 @@ const getSwapOrders = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['maker', 'taker', 'status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const swapOrders = await SwapOrder.paginate(filter, options);
+
   res.send(swapOrders);
 });
 
