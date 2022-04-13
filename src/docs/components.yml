@@ -37,22 +37,22 @@ components:
         - status
       properties:
         _id:
-          type: integer
-          format: int64
+          type: string
+          description: Object id
         makerTokenId:
-          type: integer
-          format: int64
+          type: string
+          description: Object id
         takerTokenId:
-          type: integer
-          format: int64
+          type: string
+          description: Object id
         status:
           type: integer
           enum: [1, 2, 3]
           description: 1 -> "PROPOSED", 2 -> "CLOSED", 3 -> "CANCELLED"
       example:
-        _id: 456
-        makerTokenId: 52
-        takerTokenId: 46
+        _id: 6251a79c8676cb657ff10a97
+        makerTokenId: 6351a79c8676cb657f1a0a97
+        takerTokenId: 6171a79c8676cb657ff10a97
         status: "CLOSED"
 
     Error:

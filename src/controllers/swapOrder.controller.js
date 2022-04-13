@@ -11,18 +11,19 @@ const proposeSwapOrder = catchAsync(async (req, res) => {
   const { makerTokenId, takerTokenId } = req.body;
 
   // exists
-  if ((await Artwork.findById(makerTokenId).exec()) == null)
-    throw new ApiError(httpStatus.NOT_FOUND, 'Maker token not found');
-  if ((await Artwork.findById(takerTokenId).exec()) == null)
-    throw new ApiError(httpStatus.NOT_FOUND, 'Taker token not found');
+  const makerToken = await Artwork.findOne({ _id: makerTokenId }).exec();
+  const takerToken = await Artwork.findOne({ _id: takerTokenId }).exec();
+
+  if (makerToken == null) throw new ApiError(httpStatus.NOT_FOUND, 'Maker token not found');
+  if (takerToken == null) throw new ApiError(httpStatus.NOT_FOUND, 'Taker token not found');
 
   // make sure the maker owns the token
-  if ((await Artwork.findById(makerTokenId).exec()).author !== makerAddr)
+  if (makerToken.author !== makerAddr)
     throw new ApiError(httpStatus.FORBIDDEN, `${makerAddr} does not own token ${makerTokenId}`);
 
   const order = await SwapOrder.create({
-    makerToken: makerTokenId,
-    takerToken: takerTokenId,
+    makerToken: makerToken._id,
+    takerToken: takerToken._id,
     status: OrderStatus.PROPOSED,
   });
 
@@ -30,9 +31,22 @@ const proposeSwapOrder = catchAsync(async (req, res) => {
 });
 
 const getSwapOrders = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['maker', 'taker', 'status']);
+  const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const swapOrders = await SwapOrder.paginate(filter, options);
+
+  swapOrders.results.forEach(async (order) => {
+    try {
+      const populated = await SwapOrder.findById(order._id).populate('makerToken').populate('takerToken').exec();
+      order.makerToken = populated.makerToken;
+      order.takerToken = populated.takerToken;
+    } catch (error) {
+      // pass
+    }
+  });
+
+  if (req.query.maker) swapOrders.results.filter((order) => order.makerToken.author === req.query.maker);
+  if (req.query.taker) swapOrders.results.filter((order) => order.takerToken.author === req.query.taker);
 
   res.send(swapOrders);
 });
@@ -54,7 +68,7 @@ const deleteSwapOrder = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.CONFLICT, 'Order already closed or cancelled');
 
   // populate tokens
-  swapOrder = await SwapOrder.findById(req.params.id).populate('makerToken').populate('takerToken').exec();
+  swapOrder = await SwapOrder.findById(req.params.id).populate('makerToken').populate('takerToken');
   const { makerToken, takerToken } = swapOrder;
 
   if (action === 'close') {
@@ -85,6 +99,9 @@ const deleteSwapOrder = catchAsync(async (req, res) => {
     // save
     await swapOrder.save();
   }
+
+  swapOrder.makerToken = swapOrder.makerToken._id;
+  swapOrder.takerToken = swapOrder.takerToken._id;
 
   res.send(swapOrder);
 });

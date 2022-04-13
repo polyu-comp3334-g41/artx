@@ -42,11 +42,11 @@ module.exports = router;
  *             type: object
  *             properties:
  *               makerTokenId:
- *                 type: integer
- *                 format: int64
+ *                 type: string
+ *                 format: objectId
  *               takerTokenId:
- *                 type: integer
- *                 format: int64
+ *                 type: string
+ *                 format: objectId
  *     responses:
  *       "201":
  *         description: Created
