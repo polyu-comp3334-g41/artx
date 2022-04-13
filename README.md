@@ -24,4 +24,4 @@ yarn start
 
 ## REST API Definition
 
-Run in dev mode and go to http://localhost/v1/docs
+Run in dev mode and go to http://localhost:3000/v1/docs

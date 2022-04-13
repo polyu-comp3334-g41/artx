@@ -11,11 +11,11 @@ const OrderStatus = {
 
 const swapOrderSchema = new Schema({
   makerToken: {
-    type: Schema.Types.Number,
+    type: Schema.Types.ObjectId,
     ref: 'Artwork',
   },
   takerToken: {
-    type: Schema.Types.Number,
+    type: Schema.Types.ObjectId,
     ref: 'Artwork',
   },
   status: Number, // Order status

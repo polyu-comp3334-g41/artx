@@ -4,11 +4,14 @@ components:
       type: object  
       required:
         - _id
+        - tokenId
         - title
         - author
         - imageUrl
       properties:
         _id:
+          type: string
+        tokenId:
           type: integer
           format: int64
         title:
@@ -16,6 +19,8 @@ components:
         author:
           type: string
           description: Ethereum address
+        imageUrl:
+          type: string
       example:
         _id: 10
         title: Nerd Penguin

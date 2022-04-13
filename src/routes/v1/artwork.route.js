@@ -10,6 +10,8 @@ router.route('/').get(artworkController.getArtworks);
 
 router.route('/:id').get(artworkController.getArtwork);
 
+router.route('/:id').patch(ensureAuthenticated, artworkController.updateArtwork);
+
 module.exports = router;
 
 /**
@@ -31,14 +33,25 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *              $ref: '#/components/schemas/Artwork'
+ *             type: object
+ *             properties:
+ *               tokenId:
+ *                 type: integer
+ *                 format: int64
+ *               title:
+ *                 type: string
+ *               author:
+ *                 type: string
+ *                 description: Ethereum address
+ *               imageUrl:
+ *                 type: string
  *     responses:
  *       "201":
  *         description: Created
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/Artwork'
  *
  *   get:
  *     summary: Get all artworks
@@ -107,9 +120,8 @@ module.exports = router;
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *           format: int64
- *         description: NFT id
+ *           type: string
+ *         description: Object id
  *     responses:
  *       "200":
  *         description: OK
@@ -120,4 +132,35 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ *   patch:
+ *     summary: Update Artwork
+ *     tags: [Artwork]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Object id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              properties:
+ *                imageUrl:
+ *                  type: string
+ *                tokenId:
+ *                  type: integer
+ *                  format: int32
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Artwork'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
